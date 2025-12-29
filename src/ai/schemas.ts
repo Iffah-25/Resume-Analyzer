@@ -21,6 +21,19 @@ export const ImprovedSummaryOutputSchema = z.object({
 export type ImprovedSummaryOutput = z.infer<typeof ImprovedSummaryOutputSchema>;
 // #endregion
 
+// #region Schemas and Types for Improved Resume Text Generator
+export const ImprovedResumeTextInputSchema = z.object({
+    resumeText: z.string().describe('The original text of the resume.'),
+    improvedSummary: z.string().describe('The new, AI-improved professional summary.'),
+});
+export type ImprovedResumeTextInput = z.infer<typeof ImprovedResumeTextInputSchema>;
+
+export const ImprovedResumeTextOutputSchema = z.object({
+    improvedResumeText: z.string().describe('The full text of the resume with the summary replaced.'),
+});
+export type ImprovedResumeTextOutput = z.infer<typeof ImprovedResumeTextOutputSchema>;
+// #endregion
+
 // #region Schemas and Types for Resume Analyzer
 export const ResumeAnalysisInputSchema = z.object({
   resumeText: z.string().describe('The text of the resume to analyze.'),

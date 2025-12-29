@@ -5,15 +5,22 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BookText, Bot, BrainCircuit, Gem, Star, ShieldCheck, FileDiff, CheckSquare, Square } from 'lucide-react';
+import { BookText, Bot, BrainCircuit, Gem, Star, ShieldCheck, FileDiff, CheckSquare, Square, Download, Loader2 } from 'lucide-react';
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
+import { Button } from '../ui/button';
+import { getImprovedResume } from '@/app/actions';
+import { useToast } from '@/hooks/use-toast';
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+import { ResumeTemplate } from './resume-template';
 
 interface AnalysisDisplayProps {
   analysis: ResumeAnalysisOutput | null;
   isPending: boolean;
+  originalResumeText: string; // Keep track of the original text for download
 }
 
 const SectionCard = ({ icon, title, children, className }: { icon: React.ReactNode, title: string, children: React.ReactNode, className?: string }) => (
@@ -116,8 +123,65 @@ const ChecklistItem = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
+export function AnalysisDisplay({ analysis, isPending, originalResumeText }: AnalysisDisplayProps) {
     const [showImproved, setShowImproved] = useState(true);
+    const [isDownloading, setIsDownloading] = useState(false);
+    const [improvedResumeText, setImprovedResumeText] = useState<string | null>(null);
+    const resumeTemplateRef = React.useRef<HTMLDivElement>(null);
+    const { toast } = useToast();
+
+    const handleDownload = async () => {
+        if (!analysis) return;
+        setIsDownloading(true);
+    
+        try {
+          let resumeTextToDownload = improvedResumeText;
+          if (!resumeTextToDownload) {
+            const result = await getImprovedResume({
+              resumeText: originalResumeText,
+              improvedSummary: analysis.improvedSummary,
+            });
+            resumeTextToDownload = result.improvedResumeText;
+            setImprovedResumeText(resumeTextToDownload);
+          }
+          
+          // Use a timeout to allow the state to update and the template to render
+          setTimeout(async () => {
+            const templateElement = resumeTemplateRef.current;
+            if (!templateElement) {
+              toast({ variant: 'destructive', title: 'Error', description: 'Could not find resume template to download.' });
+              setIsDownloading(false);
+              return;
+            }
+    
+            const canvas = await html2canvas(templateElement, { scale: 2 });
+            const imgData = canvas.toDataURL('image/png');
+    
+            const pdf = new jsPDF({
+              orientation: 'portrait',
+              unit: 'px',
+              format: [canvas.width, canvas.height],
+            });
+    
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('Improved-Resume.pdf');
+    
+            toast({ title: 'Success', description: 'Your improved resume has been downloaded.' });
+          }, 100);
+    
+        } catch (error) {
+          console.error('Download failed:', error);
+          toast({
+            variant: 'destructive',
+            title: 'Download Failed',
+            description: 'Could not generate the improved resume for download.',
+          });
+        } finally {
+          // Set a timeout to ensure the PDF generation process completes before resetting state
+          setTimeout(() => setIsDownloading(false), 1000);
+        }
+      };
+
 
     if (isPending) {
       return <AnalysisSkeleton />;
@@ -133,6 +197,13 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
   
     return (
       <div className="mt-8 grid gap-6 animate-fade-in">
+        <div className="hidden">
+            {isDownloading && improvedResumeText && (
+                <div ref={resumeTemplateRef}>
+                    <ResumeTemplate resumeText={improvedResumeText} />
+                </div>
+            )}
+        </div>
           <div className="grid md:grid-cols-2 gap-6 items-center">
               <SectionCard icon={<Star {...iconProps} />} title="Resume Strength Score">
                   <div className="flex items-center justify-center gap-4">
@@ -160,10 +231,10 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
                 <Label htmlFor='summary-toggle' className={cn('font-normal transition-colors', showImproved ? 'text-primary font-semibold' : 'text-muted-foreground')}>After (AI)</Label>
             </div>
             <div className="relative min-h-[6rem]">
-              <div className={cn("text-muted-foreground leading-relaxed transition-all duration-500", !showImproved ? 'opacity-100 translate-x-0 static' : 'opacity-0 -translate-x-4 absolute')}>
+              <div className={cn("text-muted-foreground leading-relaxed transition-all duration-500", !showImproved ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 absolute w-full')}>
                   {analysis.originalSummary}
               </div>
-              <div className={cn("text-foreground leading-relaxed transition-all duration-500", showImproved ? 'opacity-100 translate-x-0 static' : 'opacity-0 translate-x-4 absolute')}>
+              <div className={cn("text-foreground leading-relaxed transition-all duration-500", showImproved ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 absolute w-full')}>
                   {analysis.improvedSummary}
               </div>
             </div>
@@ -203,6 +274,16 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
                   ))}
               </Accordion>
           </SectionCard>
+
+          <div className="flex justify-center mt-4">
+                <Button onClick={handleDownload} disabled={isDownloading} size="lg" className="font-bold">
+                    {isDownloading ? (
+                        <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating PDF...</>
+                    ) : (
+                        <><Download className="mr-2 h-5 w-5" /> Download Improved Resume</>
+                    )}
+                </Button>
+            </div>
       </div>
     );
   }
@@ -267,4 +348,3 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
           </div>
       )
   }
-  

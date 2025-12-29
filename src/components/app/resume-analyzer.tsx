@@ -57,6 +57,7 @@ export function ResumeAnalyzer() {
     }
     startTransition(async () => {
       try {
+        setAnalysis(null); // Clear previous analysis
         const result = await getResumeAnalysis({ resumeText: text, jobRole: role });
         setAnalysis(result);
       } catch (error) {
@@ -208,7 +209,7 @@ export function ResumeAnalyzer() {
             </CardContent>
           </Card>
 
-          <AnalysisDisplay analysis={analysis} isPending={isPending} />
+          <AnalysisDisplay analysis={analysis} isPending={isPending} originalResumeText={resumeText} />
         </div>
       </div>
     </section>
