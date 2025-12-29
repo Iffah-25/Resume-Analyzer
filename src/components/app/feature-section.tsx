@@ -66,7 +66,6 @@ export function FeatureSection() {
   });
 
   const [activeIndex, setActiveIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
 
   const activeFeature = useMemo(() => features[activeIndex], [activeIndex]);
 
@@ -77,14 +76,12 @@ export function FeatureSection() {
   useEffect(() => {
     if (inView) {
       const interval = setInterval(() => {
-        if (!isHovered) {
-          handleNext();
-        }
+        handleNext();
       }, TRANSITION_DURATION);
 
       return () => clearInterval(interval);
     }
-  }, [inView, isHovered, handleNext]);
+  }, [inView, handleNext]);
 
   const getCardStyle = (index: number) => {
     const offset = index - activeIndex;
@@ -124,14 +121,14 @@ export function FeatureSection() {
       opacity,
       zIndex,
       filter,
-      transition: isHovered ? 'all 1s ease-in-out' : 'all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55)',
+      transition: 'all 1s cubic-bezier(0.68, -0.55, 0.27, 1.55)',
     };
   };
 
   const dynamicStyle = {
     '--active-color': activeFeature.color,
     '--transition-duration': `${TRANSITION_DURATION}ms`,
-    '--animation-play-state': isHovered ? 'paused' : 'running',
+    '--animation-play-state': 'running',
   } as React.CSSProperties;
 
   return (
@@ -143,8 +140,6 @@ export function FeatureSection() {
           'container px-4 md:px-6 transition-all duration-700 ease-out',
           inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
@@ -160,7 +155,7 @@ export function FeatureSection() {
             </p>
           </div>
         </div>
-        <div className="mt-20 relative h-[300px] flex items-center justify-center">
+        <div className="mt-20 relative h-[350px] flex items-center justify-center">
           <div className="absolute inset-0 feature-gradient-bg transition-colors duration-1000 ease-in-out"></div>
           {features.map((feature, index) => {
             const isActive = index === activeIndex;
@@ -169,7 +164,7 @@ export function FeatureSection() {
             return (
               <div
                 key={feature.title}
-                className="absolute w-[90%] max-w-lg p-8 rounded-xl bg-background/50 backdrop-blur-md shadow-2xl border border-white/10"
+                className="absolute w-[95%] max-w-2xl p-8 rounded-xl bg-background/50 backdrop-blur-md shadow-2xl border border-white/10"
                 style={getCardStyle(index)}
               >
                 <div className="flex items-center gap-4">
@@ -192,9 +187,6 @@ export function FeatureSection() {
               </div>
             );
           })}
-           <div className="absolute bottom-[-50px] left-1/2 -translate-x-1/2 w-1/2 max-w-sm h-1 bg-white/10 rounded-full overflow-hidden">
-                <div className="progress-line h-full bg-[--active-color] transition-colors duration-1000 ease-in-out"></div>
-            </div>
         </div>
       </div>
     </section>
