@@ -5,8 +5,8 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BookText, Bot, BrainCircuit, Gem, Star, ShieldCheck, FileDiff, CheckSquare, Square, Download, Loader2 } from 'lucide-react';
-import React, { useState } from 'react';
+import { BookText, BrainCircuit, Gem, Star, ShieldCheck, FileDiff, CheckSquare, Square, Download, Loader2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
@@ -20,7 +20,7 @@ import { ResumeTemplate } from './resume-template';
 interface AnalysisDisplayProps {
   analysis: ResumeAnalysisOutput | null;
   isPending: boolean;
-  originalResumeText: string; // Keep track of the original text for download
+  originalResumeText: string;
 }
 
 const SectionCard = ({ icon, title, children, className }: { icon: React.ReactNode, title: string, children: React.ReactNode, className?: string }) => (
@@ -126,59 +126,62 @@ const ChecklistItem = ({ children }: { children: React.ReactNode }) => {
 export function AnalysisDisplay({ analysis, isPending, originalResumeText }: AnalysisDisplayProps) {
     const [showImproved, setShowImproved] = useState(true);
     const [isDownloading, setIsDownloading] = useState(false);
-    const [improvedResumeText, setImprovedResumeText] = useState<string | null>(null);
+    const [textForPdf, setTextForPdf] = useState<string | null>(null);
     const resumeTemplateRef = React.useRef<HTMLDivElement>(null);
     const { toast } = useToast();
 
+    useEffect(() => {
+        const generatePdf = async () => {
+            if (!textForPdf || !resumeTemplateRef.current) return;
+            
+            try {
+                const canvas = await html2canvas(resumeTemplateRef.current, { scale: 2 });
+                const imgData = canvas.toDataURL('image/png');
+        
+                if (imgData.length < 100) { // Simple check for empty image
+                    throw new Error("Generated image data is empty or invalid.");
+                }
+
+                const pdf = new jsPDF({
+                  orientation: 'portrait',
+                  unit: 'px',
+                  format: [canvas.width, canvas.height],
+                });
+        
+                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+                pdf.save('Improved-Resume.pdf');
+        
+                toast({ title: 'Success', description: 'Your improved resume has been downloaded.' });
+            } catch (error) {
+                console.error("PDF generation failed:", error);
+                toast({ variant: 'destructive', title: 'Error', description: 'Could not generate the PDF. The resume template may be empty or invalid.' });
+            } finally {
+                setTextForPdf(null); // Clean up state
+                setIsDownloading(false);
+            }
+        };
+
+        generatePdf();
+    }, [textForPdf, toast]);
+
     const handleDownload = async () => {
-        if (!analysis) return;
+        if (!analysis || !originalResumeText) return;
         setIsDownloading(true);
     
         try {
-          let resumeTextToDownload = improvedResumeText;
-          if (!resumeTextToDownload) {
             const result = await getImprovedResume({
               resumeText: originalResumeText,
               improvedSummary: analysis.improvedSummary,
             });
-            resumeTextToDownload = result.improvedResumeText;
-            setImprovedResumeText(resumeTextToDownload);
-          }
-          
-          // Use a timeout to allow the state to update and the template to render
-          setTimeout(async () => {
-            const templateElement = resumeTemplateRef.current;
-            if (!templateElement) {
-              toast({ variant: 'destructive', title: 'Error', description: 'Could not find resume template to download.' });
-              setIsDownloading(false);
-              return;
-            }
-    
-            const canvas = await html2canvas(templateElement, { scale: 2 });
-            const imgData = canvas.toDataURL('image/png');
-    
-            const pdf = new jsPDF({
-              orientation: 'portrait',
-              unit: 'px',
-              format: [canvas.width, canvas.height],
-            });
-    
-            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-            pdf.save('Improved-Resume.pdf');
-    
-            toast({ title: 'Success', description: 'Your improved resume has been downloaded.' });
-          }, 100);
-    
+            setTextForPdf(result.improvedResumeText); // Trigger the useEffect
         } catch (error) {
           console.error('Download failed:', error);
           toast({
             variant: 'destructive',
             title: 'Download Failed',
-            description: 'Could not generate the improved resume for download.',
+            description: 'Could not generate the improved resume text.',
           });
-        } finally {
-          // Set a timeout to ensure the PDF generation process completes before resetting state
-          setTimeout(() => setIsDownloading(false), 1000);
+          setIsDownloading(false);
         }
       };
 
@@ -197,13 +200,15 @@ export function AnalysisDisplay({ analysis, isPending, originalResumeText }: Ana
   
     return (
       <div className="mt-8 grid gap-6 animate-fade-in">
-        <div className="hidden">
-            {isDownloading && improvedResumeText && (
+        {/* Off-screen container for PDF generation */}
+        <div className="absolute -left-[9999px] top-auto">
+            {textForPdf && (
                 <div ref={resumeTemplateRef}>
-                    <ResumeTemplate resumeText={improvedResumeText} />
+                    <ResumeTemplate resumeText={textForPdf} />
                 </div>
             )}
         </div>
+
           <div className="grid md:grid-cols-2 gap-6 items-center">
               <SectionCard icon={<Star {...iconProps} />} title="Resume Strength Score">
                   <div className="flex items-center justify-center gap-4">
@@ -348,3 +353,5 @@ export function AnalysisDisplay({ analysis, isPending, originalResumeText }: Ana
           </div>
       )
   }
+
+    
