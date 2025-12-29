@@ -30,7 +30,7 @@ export async function generateImprovedSummary(input: ImprovedSummaryInput): Prom
   return improvedSummaryFlow(input);
 }
 
-const prompt = ai.definePrompt({
+const improvedSummaryPrompt = ai.definePrompt({
   name: 'improvedSummaryPrompt',
   input: {schema: ImprovedSummaryInputSchema},
   output: {schema: ImprovedSummaryOutputSchema},
@@ -48,7 +48,7 @@ const improvedSummaryFlow = ai.defineFlow(
     outputSchema: ImprovedSummaryOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await improvedSummaryPrompt(input);
     return output!;
   }
 );

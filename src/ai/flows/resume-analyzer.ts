@@ -13,7 +13,7 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'genkit';
+import { z } from 'zod';
 
 export const ResumeAnalysisInputSchema = z.object({
   resumeText: z.string().describe('The text of the resume to analyze.'),
@@ -34,6 +34,10 @@ export const ResumeAnalysisOutputSchema = z.object({
   }).describe('Section-wise suggestions for the resume.'),
 });
 export type ResumeAnalysisOutput = z.infer<typeof ResumeAnalysisOutputSchema>;
+
+export async function analyzeResume(input: ResumeAnalysisInput): Promise<ResumeAnalysisOutput> {
+  return resumeAnalysisFlow(input);
+}
 
 const resumeAnalysisPrompt = ai.definePrompt({
   name: 'resumeAnalysisPrompt',
@@ -59,7 +63,7 @@ Resume Text:
 `,
 });
 
-export const resumeAnalysisFlow = ai.defineFlow(
+const resumeAnalysisFlow = ai.defineFlow(
   {
     name: 'resumeAnalysisFlow',
     inputSchema: ResumeAnalysisInputSchema,

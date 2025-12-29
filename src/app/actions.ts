@@ -1,6 +1,6 @@
 
 'use server';
-import { resumeAnalysisFlow, ResumeAnalysisOutput } from '@/ai/flows/resume-analyzer';
+import { analyzeResume, ResumeAnalysisOutput } from '@/ai/flows/resume-analyzer';
 
 export async function getResumeAnalysis(resumeText: string): Promise<ResumeAnalysisOutput> {
   if (!resumeText.trim()) {
@@ -8,7 +8,7 @@ export async function getResumeAnalysis(resumeText: string): Promise<ResumeAnaly
   }
 
   try {
-    const result = await resumeAnalysisFlow({ resumeText });
+    const result = await analyzeResume({ resumeText });
     return result;
   } catch (error) {
     console.error("Error in getResumeAnalysis action:", error);
