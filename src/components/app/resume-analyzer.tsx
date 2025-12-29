@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Wand2 } from 'lucide-react';
+import { Loader2, Sparkles, Wand2, TestTube2 } from 'lucide-react';
 import React, { useState, useTransition } from 'react';
 import { AnalysisDisplay } from './analysis-display';
 import { FileDropzone } from './file-dropzone';
@@ -19,6 +19,7 @@ import {
 } from '@/components/ui/select';
 import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
+import { sampleResume } from '@/lib/sample-resume';
 
 const jobRoles = [
   'Software Engineer',
@@ -45,19 +46,18 @@ export function ResumeAnalyzer() {
     threshold: 0.1,
   });
 
-  const handleAnalyze = () => {
-    if (!resumeText.trim()) {
+  const performAnalysis = (text: string, role: string) => {
+    if (!text.trim()) {
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Please paste your resume or upload a file.',
+        description: 'Resume text is empty.',
       });
       return;
     }
-
     startTransition(async () => {
       try {
-        const result = await getResumeAnalysis({ resumeText, jobRole });
+        const result = await getResumeAnalysis({ resumeText: text, jobRole: role });
         setAnalysis(result);
       } catch (error) {
         console.error('Analysis failed:', error);
@@ -72,7 +72,25 @@ export function ResumeAnalyzer() {
         setAnalysis(null);
       }
     });
+  }
+
+  const handleAnalyze = () => {
+    performAnalysis(resumeText, jobRole);
   };
+  
+  const handleDemo = () => {
+    const demoRole = 'Software Engineer';
+    setResumeText(sampleResume);
+    setJobRole(demoRole);
+    // Scroll to analysis section
+    setTimeout(() => {
+        const element = document.getElementById('analyzer');
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth' });
+        }
+    }, 100);
+    performAnalysis(sampleResume, demoRole);
+  }
 
   const handleTextExtracted = (text: string) => {
     setResumeText(text);
@@ -137,7 +155,7 @@ export function ResumeAnalyzer() {
                 </Select>
               </div>
 
-              <div className="mt-8 flex flex-col items-center">
+              <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4">
                 <Button
                   onClick={handleAnalyze}
                   disabled={isPending}
@@ -155,6 +173,16 @@ export function ResumeAnalyzer() {
                       Analyze My Resume
                     </>
                   )}
+                </Button>
+                <Button
+                  onClick={handleDemo}
+                  disabled={isPending}
+                  size="lg"
+                  variant="outline"
+                  className="w-full md:w-auto font-bold text-lg"
+                >
+                  <TestTube2 className="mr-2 h-5 w-5" />
+                  Try Demo
                 </Button>
               </div>
             </CardContent>
