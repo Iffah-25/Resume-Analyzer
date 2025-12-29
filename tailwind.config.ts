@@ -88,10 +88,27 @@ export default {
             height: '0',
           },
         },
+        'fade-in-up': {
+          '0%': {
+            opacity: '0',
+            transform: 'translateY(20px)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
+        },
+        'gradient': {
+          'to': {
+            'background-position': '-200% center',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
+        'fade-in-up': 'fade-in-up 0.6s ease-out forwards',
+        'gradient': 'gradient 3s linear infinite',
       },
     },
   },
