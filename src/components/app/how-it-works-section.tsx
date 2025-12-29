@@ -32,7 +32,7 @@ export function HowItWorksSection() {
       });
 
   return (
-    <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32 bg-background">
+    <section id="how-it-works" className="w-full py-12 md:py-16 lg:py-20 bg-background">
       <div ref={ref} className={cn("container px-4 md:px-6 transition-all duration-700 ease-out", inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <div className="flex flex-col items-center justify-center space-y-4 text-center mb-12">
           <div className="space-y-2">

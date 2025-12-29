@@ -132,7 +132,7 @@ export function FeatureSection() {
   } as React.CSSProperties;
 
   return (
-    <section id="features" className="w-full py-24 md:py-32 lg:py-40 overflow-hidden">
+    <section id="features" className="w-full py-12 md:py-16 lg:py-20 overflow-hidden">
       <div
         ref={sectionRef}
         style={dynamicStyle}
@@ -155,7 +155,7 @@ export function FeatureSection() {
             </p>
           </div>
         </div>
-        <div className="mt-20 relative h-[350px] flex items-center justify-center">
+        <div className="mt-20 relative h-[400px] flex items-center justify-center">
           <div className="absolute inset-0 feature-gradient-bg transition-colors duration-1000 ease-in-out"></div>
           {features.map((feature, index) => {
             const isActive = index === activeIndex;
@@ -164,7 +164,7 @@ export function FeatureSection() {
             return (
               <div
                 key={feature.title}
-                className="absolute w-[95%] max-w-2xl p-8 rounded-xl bg-background/50 backdrop-blur-md shadow-2xl border border-white/10"
+                className="absolute w-[95%] max-w-3xl p-8 rounded-xl bg-background/50 backdrop-blur-md shadow-2xl border border-white/10"
                 style={getCardStyle(index)}
               >
                 <div className="flex items-center gap-4">

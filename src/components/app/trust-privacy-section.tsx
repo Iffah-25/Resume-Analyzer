@@ -25,7 +25,7 @@ export function TrustAndPrivacySection() {
         threshold: 0.3,
       });
   return (
-    <section id="privacy" className="w-full py-12 md:py-24 lg:py-32">
+    <section id="privacy" className="w-full py-12 md:py-16 lg:py-20">
       <div ref={ref} className={cn("container px-4 md:px-6 transition-all duration-700 ease-out", inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-bold tracking-tighter sm:text-4xl">

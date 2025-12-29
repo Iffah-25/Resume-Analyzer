@@ -79,7 +79,7 @@ export function ResumeAnalyzer() {
   };
 
   return (
-    <section id="analyzer" className="w-full py-12 md:py-24 lg:py-32 bg-muted/20 scroll-mt-20">
+    <section id="analyzer" className="w-full py-12 md:py-16 lg:py-20 bg-muted/20 scroll-mt-20">
       <div ref={ref} className={cn("container px-4 md:px-6 transition-all duration-700 ease-out", inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10")}>
         <div className="max-w-4xl mx-auto">
           <Card className="shadow-2xl shadow-primary/10">
