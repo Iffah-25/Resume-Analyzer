@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, Wand2, TestTube2 } from 'lucide-react';
+import { Loader2, Sparkles, Wand2, TestTube2, Trash2 } from 'lucide-react';
 import React, { useState, useTransition } from 'react';
 import { AnalysisDisplay } from './analysis-display';
 import { FileDropzone } from './file-dropzone';
@@ -92,6 +92,16 @@ export function ResumeAnalyzer() {
     performAnalysis(sampleResume, demoRole);
   }
 
+  const handleClear = () => {
+    setResumeText('');
+    setJobRole('');
+    setAnalysis(null);
+    toast({
+        title: "Cleared",
+        description: "The form and analysis have been reset.",
+    });
+  }
+
   const handleTextExtracted = (text: string) => {
     setResumeText(text);
   };
@@ -155,10 +165,10 @@ export function ResumeAnalyzer() {
                 </Select>
               </div>
 
-              <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4">
+              <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 flex-wrap">
                 <Button
                   onClick={handleAnalyze}
-                  disabled={isPending}
+                  disabled={isPending || !resumeText}
                   size="lg"
                   className="w-full md:w-auto font-bold text-lg shadow-lg hover:shadow-primary/40 transition-shadow"
                 >
@@ -183,6 +193,16 @@ export function ResumeAnalyzer() {
                 >
                   <TestTube2 className="mr-2 h-5 w-5" />
                   Try Demo
+                </Button>
+                 <Button
+                  onClick={handleClear}
+                  disabled={isPending || (!resumeText && !analysis)}
+                  size="lg"
+                  variant="ghost"
+                  className="w-full md:w-auto font-bold text-lg text-muted-foreground hover:text-destructive"
+                >
+                  <Trash2 className="mr-2 h-5 w-5" />
+                  Clear
                 </Button>
               </div>
             </CardContent>
