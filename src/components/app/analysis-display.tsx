@@ -142,11 +142,11 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
                 <Switch id="summary-toggle" checked={showImproved} onCheckedChange={setShowImproved} />
                 <Label htmlFor='summary-toggle' className={cn('font-normal', showImproved && 'text-primary font-semibold')}>After (AI)</Label>
             </div>
-            <div className="relative">
-                <p className={cn("text-muted-foreground leading-relaxed transition-opacity duration-300", showImproved ? 'opacity-0 h-0' : 'opacity-100')}>
+            <div className="relative min-h-[100px]">
+                <p className={cn("text-muted-foreground leading-relaxed transition-opacity duration-300", showImproved ? 'opacity-0 absolute' : 'opacity-100')}>
                     {analysis.originalSummary}
                 </p>
-                <p className={cn("text-muted-foreground leading-relaxed transition-opacity duration-300 absolute top-0", !showImproved ? 'opacity-0' : 'opacity-100')}>
+                <p className={cn("text-muted-foreground leading-relaxed transition-opacity duration-300", !showImproved ? 'opacity-0 absolute' : 'opacity-100')}>
                     {analysis.improvedProfessionalSummary}
                 </p>
             </div>
