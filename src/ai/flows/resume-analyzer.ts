@@ -28,7 +28,7 @@ Analyze the resume text provided below. Return the output strictly as a JSON obj
 2.  **Improved Professional Summary**: Write an improved summary of 3–4 lines.
 3.  **Skills to Add or Improve**: List skills as bullet points.
 4.  **ATS Keywords Missing**: List important missing keywords, comma-separated.
-5.  **Section-wise Suggestions**: Provide concise and practical suggestions for each section (Summary, Skills, Experience, Projects, Education).
+5.  **Section-wise Suggestions**: Provide concise and practical suggestions for each section (Summary, Skills, Experience, Projects, Education). For each suggestion, provide a brief "before" and "after" example to illustrate the improvement.
 
 Rules:
 - Keep all suggestions concise and practical.
