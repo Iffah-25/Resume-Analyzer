@@ -30,7 +30,3 @@ export const generateImprovedSummaryTool = ai.defineTool(
     return output!;
   }
 );
-
-export async function generateImprovedSummary(input: ImprovedSummaryInput) {
-    return generateImprovedSummaryTool(input);
-}
