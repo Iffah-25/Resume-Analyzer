@@ -48,29 +48,29 @@ export const ResumeAnalysisOutputSchema = z.object({
   sectionWiseSuggestions: z
     .object({
       summary: z
-        .string()
+        .array(z.string())
         .describe(
-          'Suggestions for the summary section with before/after examples.'
+          'Suggestions for the summary section.'
         ),
       skills: z
-        .string()
+        .array(z.string())
         .describe(
-          'Suggestions for the skills section with before/after examples.'
+          'Suggestions for the skills section.'
         ),
       experience: z
-        .string()
+        .array(z.string())
         .describe(
-          'Suggestions for the experience section with before/after examples.'
+          'Suggestions for the experience section.'
         ),
       projects: z
-        .string()
+        .array(z.string())
         .describe(
-          'Suggestions for the projects section with before/after examples.'
+          'Suggestions for the projects section.'
         ),
       education: z
-        .string()
+        .array(z.string())
         .describe(
-          'Suggestions for the education section with before/after examples.'
+          'Suggestions for the education section.'
         ),
     })
     .describe('Section-wise suggestions for the resume.'),

@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BookText, Bot, BrainCircuit, Gem, Star, ShieldCheck, FileDiff } from 'lucide-react';
+import { BookText, Bot, BrainCircuit, Gem, Star, ShieldCheck, FileDiff, CheckSquare, Square } from 'lucide-react';
 import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Switch } from '../ui/switch';
@@ -99,6 +99,23 @@ const ScoreGauge = ({ score, maxScore }: { score: number, maxScore: number }) =>
     );
   };
 
+const ChecklistItem = ({ children }: { children: React.ReactNode }) => {
+    const [isChecked, setIsChecked] = useState(false);
+    const Icon = isChecked ? CheckSquare : Square;
+
+    return (
+        <div 
+            className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+            onClick={() => setIsChecked(!isChecked)}
+        >
+            <Icon className={cn("h-5 w-5 mt-0.5 shrink-0 transition-all", isChecked ? 'text-primary' : 'text-muted-foreground')} />
+            <p className={cn("transition-all", isChecked ? 'line-through text-muted-foreground' : 'text-foreground')}>
+                {children}
+            </p>
+        </div>
+    );
+}
+
 export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
     const [showImproved, setShowImproved] = useState(true);
 
@@ -138,17 +155,17 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
   
           <SectionCard icon={<FileDiff {...iconProps} />} title="Professional Summary">
             <div className='flex items-center justify-center mb-4 space-x-2'>
-                <Label htmlFor='summary-toggle' className={cn('font-normal', !showImproved && 'text-primary font-semibold')}>Before</Label>
+                <Label htmlFor='summary-toggle' className={cn('font-normal transition-colors', !showImproved ? 'text-primary font-semibold' : 'text-muted-foreground')}>Before</Label>
                 <Switch id="summary-toggle" checked={showImproved} onCheckedChange={setShowImproved} />
-                <Label htmlFor='summary-toggle' className={cn('font-normal', showImproved && 'text-primary font-semibold')}>After (AI)</Label>
+                <Label htmlFor='summary-toggle' className={cn('font-normal transition-colors', showImproved ? 'text-primary font-semibold' : 'text-muted-foreground')}>After (AI)</Label>
             </div>
-            <div className="relative min-h-[100px]">
-                <p className={cn("text-muted-foreground leading-relaxed transition-opacity duration-300", showImproved ? 'opacity-0 absolute' : 'opacity-100')}>
-                    {analysis.originalSummary}
-                </p>
-                <p className={cn("text-muted-foreground leading-relaxed transition-opacity duration-300", !showImproved ? 'opacity-0 absolute' : 'opacity-100')}>
-                    {analysis.improvedProfessionalSummary}
-                </p>
+            <div className="relative overflow-hidden">
+              <div className={cn("text-muted-foreground leading-relaxed transition-all duration-500", !showImproved ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 absolute')}>
+                  {analysis.originalSummary}
+              </div>
+              <div className={cn("text-foreground leading-relaxed transition-all duration-500", showImproved ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 absolute')}>
+                  {analysis.improvedProfessionalSummary}
+              </div>
             </div>
           </SectionCard>
   
@@ -156,7 +173,7 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
               <SectionCard icon={<BrainCircuit {...iconProps} />} title="Skills to Add or Improve">
                   <div className="flex flex-wrap gap-2">
                       {analysis.skillsToAddOrImprove.map((skill, index) => (
-                          <Badge key={index} variant="secondary">{skill}</Badge>
+                          <Badge key={index} variant="secondary" className="hover:bg-primary/20 hover:text-primary transition-colors cursor-default">{skill}</Badge>
                       ))}
                   </div>
               </SectionCard>
@@ -164,7 +181,7 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
               <SectionCard icon={<Gem {...iconProps} />} title="Missing ATS Keywords">
                   <div className="flex flex-wrap gap-2">
                       {analysis.atsKeywordsMissing.map((keyword, index) => (
-                          <Badge key={index} variant="secondary">{keyword}</Badge>
+                          <Badge key={index} variant="secondary" className="hover:bg-primary/20 hover:text-primary transition-colors cursor-default">{keyword}</Badge>
                       ))}
                   </div>
               </SectionCard>
@@ -172,13 +189,17 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
   
           <SectionCard icon={<BookText {...iconProps} />} title="Section-wise Suggestions">
               <Accordion type="single" collapsible className="w-full">
-                  {Object.entries(analysis.sectionWiseSuggestions).map(([section, suggestion]) => (
+                  {Object.entries(analysis.sectionWiseSuggestions).map(([section, suggestions]) => (
+                    Array.isArray(suggestions) && suggestions.length > 0 && (
                       <AccordionItem value={section} key={section}>
                           <AccordionTrigger className="text-lg capitalize font-medium">{section}</AccordionTrigger>
-                          <AccordionContent className="text-base text-muted-foreground leading-relaxed whitespace-pre-line">
-                              {suggestion}
+                          <AccordionContent className="text-base text-muted-foreground leading-relaxed space-y-2">
+                              {suggestions.map((suggestion, index) => (
+                                  <ChecklistItem key={index}>{suggestion}</ChecklistItem>
+                              ))}
                           </AccordionContent>
                       </AccordionItem>
+                    )
                   ))}
               </Accordion>
           </SectionCard>

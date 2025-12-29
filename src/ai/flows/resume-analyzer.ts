@@ -5,7 +5,7 @@
  *
  * The flow takes resume text as input and uses the Google Gemini API to generate:
  * - A resume strength score
- * - An improved professional summary
+ * - An improved professional summary (conditionally)
  * - Skills to add or improve
  * - Missing ATS keywords
  * - Section-wise suggestions
@@ -18,11 +18,13 @@ import {
   type ResumeAnalysisInput,
   type ResumeAnalysisOutput,
 } from '@/ai/schemas';
+import { generateImprovedSummaryTool } from './improved-summary-generator';
 
 const resumeAnalysisPrompt = ai.definePrompt({
   name: 'resumeAnalysisPrompt',
   input: { schema: ResumeAnalysisInputSchema },
   output: { schema: ResumeAnalysisOutputSchema },
+  tools: [generateImprovedSummaryTool],
   prompt: `You are a professional ATS resume reviewer and career coach.
 {{#if jobRole}}
 You are reviewing a resume for the role of: **{{jobRole}}**. Tailor your feedback and keyword suggestions accordingly.
@@ -35,10 +37,10 @@ Analyze the resume text provided below. Return the output strictly as a JSON obj
 1.  **Resume Strength Score**: Provide a score out of 10.
 2.  **ATS Compatibility**: Based on ATS compatibility, classify the resume as: Poor, Average, or Strong.
 3.  **Original Professional Summary**: Extract the original professional summary section from the resume text. If no clear summary section is found, state "No summary found."
-4.  **Improved Professional Summary**: Write an improved summary of 3–4 lines.
-5.  **Skills to Add or Improve**: List skills as bullet points.
-6.  **ATS Keywords Missing**: List important missing keywords, comma-separated.
-7.  **Section-wise Suggestions**: Provide concise and practical suggestions for each section (Summary, Skills, Experience, Projects, Education). For each suggestion, provide a brief "before" and "after" example to illustrate the improvement.
+4.  **Improved Professional Summary**: Based on the original summary, determine if it is weak or could be improved. If it is, use the 'generateImprovedSummary' tool to create a new one. Otherwise, return the original summary.
+5.  **Skills to Add or Improve**: List skills as an array of strings.
+6.  **ATS Keywords Missing**: List important missing keywords as an array of strings.
+7.  **Section-wise Suggestions**: For each key resume section (Summary, Skills, Experience, Projects, Education), provide an array of concise, actionable suggestion strings. Each string should be a recommendation for improvement.
 
 Rules:
 - Keep all suggestions concise and practical.
