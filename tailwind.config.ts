@@ -98,6 +98,20 @@ export default {
             '0%': { backgroundPosition: '200% 0' },
             '100%': { backgroundPosition: '-200% 0' },
         },
+        blob: {
+          '0%': {
+            transform: 'translate(0px, 0px) scale(1)',
+          },
+          '33%': {
+            transform: 'translate(30px, -50px) scale(1.1)',
+          },
+          '66%': {
+            transform: 'translate(-20px, 20px) scale(0.9)',
+          },
+          '100%': {
+            transform: 'tranlate(0px, 0px) scale(1)',
+          },
+        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -106,6 +120,7 @@ export default {
         'fade-in-up': 'fade-in-up 0.8s ease-out forwards',
         'gradient-xy': 'gradient-xy 15s ease infinite',
         shimmer: 'shimmer 5s linear infinite',
+        blob: 'blob 7s infinite',
       },
     },
   },
