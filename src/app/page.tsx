@@ -1,3 +1,5 @@
+'use client';
+
 import { FeatureSection } from '@/components/app/feature-section';
 import { Footer } from '@/components/app/footer';
 import { HeroSection } from '@/components/app/hero-section';
