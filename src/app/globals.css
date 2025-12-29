@@ -78,4 +78,55 @@
     background-size: 200% 100%;
     animation: shimmer 5s linear infinite;
   }
+
+  .feature-gradient-bg {
+    background: radial-gradient(circle at 50% 50%, var(--active-color, hsl(var(--primary))) 0%, transparent 40%);
+    opacity: 0.15;
+    filter: blur(80px);
+  }
+
+  .typewriter-text {
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    animation: typewriter var(--transition-duration) steps(var(--text-len, 30)) 1,
+               blink-caret .75s step-end infinite;
+    animation-play-state: var(--animation-play-state);
+    animation-fill-mode: forwards;
+    border-right: .15em solid var(--active-color);
+  }
+
+  .icon-wrapper.animate-pulse-rotate {
+    animation: pulse-rotate var(--transition-duration) cubic-bezier(0.68, -0.55, 0.27, 1.55);
+    animation-play-state: var(--animation-play-state);
+  }
+  
+  .progress-line {
+      width: 100%;
+      transform-origin: left center;
+      animation: progress var(--transition-duration) linear infinite;
+      animation-play-state: var(--animation-play-state);
+  }
+}
+
+@keyframes typewriter {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink-caret {
+  from, to { border-color: transparent }
+  50% { border-color: var(--active-color); }
+}
+
+@keyframes pulse-rotate {
+  0% { transform: scale(1) rotate(0deg); opacity: 0; }
+  20% { transform: scale(1.25) rotate(15deg); opacity: 1; }
+  80% { transform: scale(1.25) rotate(15deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 0; }
+}
+
+@keyframes progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
 }

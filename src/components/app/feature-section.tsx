@@ -1,7 +1,5 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import {
   BarChart,
   Briefcase,
@@ -10,74 +8,143 @@ import {
   ShieldCheck,
   Sparkles,
 } from 'lucide-react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { cn } from '@/lib/utils';
 import { useInView } from 'react-intersection-observer';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from '@/components/ui/carousel';
-import Autoplay from 'embla-carousel-autoplay';
-import React from 'react';
 
 const features = [
   {
-    icon: <BarChart className="h-8 w-8 text-primary" />,
+    icon: BarChart,
     title: 'ATS Score & Resume Strength',
     description:
       'Get a clear score that tells you how well your resume will pass automated screening.',
+    color: 'hsl(221.2 83.2% 53.3%)',
   },
   {
-    icon: <Briefcase className="h-8 w-8 text-primary" />,
+    icon: Briefcase,
     title: 'Job Role–Based Feedback',
     description:
       'Receive tailored advice by selecting your target job role for more relevant suggestions.',
+    color: 'hsl(262.1 83.3% 57.8%)',
   },
   {
-    icon: <KeyRound className="h-8 w-8 text-primary" />,
+    icon: KeyRound,
     title: 'Missing Keywords Detection',
     description:
       'Uncover the exact keywords and skills you need to add for your specific career path.',
+    color: 'hsl(175.8 98.2% 35.5%)',
   },
   {
-    icon: <FileUp className="h-8 w-8 text-primary" />,
+    icon: FileUp,
     title: 'DOC/DOCX Resume Upload',
     description:
       'Easily upload your resume in .doc or .docx format for a quick and seamless analysis.',
+    color: 'hsl(317.1 83.3% 57.8%)',
   },
   {
-    icon: <Sparkles className="h-8 w-8 text-primary" />,
+    icon: Sparkles,
     title: 'AI Summary Improvement',
     description:
       'Let AI craft a powerful, attention-grabbing professional summary for you in seconds.',
+    color: 'hsl(47.9 95.8% 53.1%)',
   },
   {
-    icon: <ShieldCheck className="h-8 w-8 text-primary" />,
+    icon: ShieldCheck,
     title: 'Privacy-First',
     description:
       'Your resume data is processed securely and is never stored on our servers. No sign-up needed.',
+    color: 'hsl(142.1 76.2% 36.3%)',
   },
 ];
 
+const TRANSITION_DURATION = 4000; // 4 seconds
+
 export function FeatureSection() {
-  const { ref, inView } = useInView({
+  const { ref: sectionRef, inView } = useInView({
     triggerOnce: true,
     threshold: 0.1,
   });
 
-  const plugin = React.useRef(
-    Autoplay({ delay: 2000, stopOnInteraction: true })
-  );
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const activeFeature = useMemo(() => features[activeIndex], [activeIndex]);
+
+  const handleNext = useCallback(() => {
+    setActiveIndex((prevIndex) => (prevIndex + 1) % features.length);
+  }, []);
+
+  useEffect(() => {
+    if (inView) {
+      const interval = setInterval(() => {
+        if (!isHovered) {
+          handleNext();
+        }
+      }, TRANSITION_DURATION);
+
+      return () => clearInterval(interval);
+    }
+  }, [inView, isHovered, handleNext]);
+
+  const getCardStyle = (index: number) => {
+    const offset = index - activeIndex;
+    const normalizedOffset =
+      (offset + features.length) % features.length;
+
+    let transform = '';
+    let opacity = 0;
+    let zIndex = 0;
+    let filter = 'blur(5px)';
+
+    if (normalizedOffset === 0) {
+      // Active card
+      transform = 'translateY(0) scale(1)';
+      opacity = 1;
+      zIndex = features.length;
+      filter = 'blur(0px)';
+    } else if (normalizedOffset === 1) {
+      // Next card
+      transform = 'translateY(50px) translateX(30px) scale(0.85)';
+      opacity = 0.4;
+      zIndex = features.length - 1;
+    } else if (normalizedOffset === features.length - 1) {
+      // Previous card
+      transform = 'translateY(-50px) translateX(-30px) scale(0.85)';
+      opacity = 0.4;
+      zIndex = features.length - 2;
+    } else {
+      // Hidden cards
+      transform = `translateY(${offset * 20}px) scale(0.7)`;
+      opacity = 0;
+      zIndex = 0;
+    }
+
+    return {
+      transform,
+      opacity,
+      zIndex,
+      filter,
+      transition: isHovered ? 'all 1s ease-in-out' : 'all 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55)',
+    };
+  };
+
+  const dynamicStyle = {
+    '--active-color': activeFeature.color,
+    '--transition-duration': `${TRANSITION_DURATION}ms`,
+    '--animation-play-state': isHovered ? 'paused' : 'running',
+  } as React.CSSProperties;
 
   return (
-    <section id="features" className="w-full py-12 md:py-24 lg:py-32">
+    <section id="features" className="w-full py-24 md:py-32 lg:py-40 overflow-hidden">
       <div
-        ref={ref}
+        ref={sectionRef}
+        style={dynamicStyle}
         className={cn(
           'container px-4 md:px-6 transition-all duration-700 ease-out',
           inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         )}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
@@ -93,46 +160,41 @@ export function FeatureSection() {
             </p>
           </div>
         </div>
-        <div className="mt-12">
-          <Carousel
-            plugins={[plugin.current]}
-            opts={{
-              align: 'start',
-              loop: true,
-            }}
-            onMouseEnter={plugin.current.stop}
-            onMouseLeave={plugin.current.reset}
-            className="w-full max-w-md mx-auto sm:max-w-2xl md:max-w-4xl lg:max-w-6xl"
-          >
-            <CarouselContent>
-              {features.map((feature, index) => (
-                <CarouselItem
-                  key={index}
-                  className="sm:basis-1/2 lg:basis-1/3 p-4"
-                >
-                  <div className="h-full p-1">
-                    <Card
-                      className={cn(
-                        'h-full transform-gpu transition-all duration-300 hover:-translate-y-2 hover:shadow-xl'
-                      )}
-                    >
-                      <CardHeader className="flex flex-col items-center text-center">
-                        {feature.icon}
-                        <CardTitle className="mt-4 text-xl">
-                          {feature.title}
-                        </CardTitle>
-                      </CardHeader>
-                      <CardContent className="text-center text-muted-foreground text-sm pb-6">
-                        {feature.description}
-                      </CardContent>
-                    </Card>
+        <div className="mt-20 relative h-[300px] flex items-center justify-center">
+          <div className="absolute inset-0 feature-gradient-bg transition-colors duration-1000 ease-in-out"></div>
+          {features.map((feature, index) => {
+            const isActive = index === activeIndex;
+            const Icon = feature.icon;
+
+            return (
+              <div
+                key={feature.title}
+                className="absolute w-[90%] max-w-lg p-8 rounded-xl bg-background/50 backdrop-blur-md shadow-2xl border border-white/10"
+                style={getCardStyle(index)}
+              >
+                <div className="flex items-center gap-4">
+                  <div className={cn("icon-wrapper", { 'animate-pulse-rotate': isActive })}>
+                     <Icon className="h-10 w-10 text-[--active-color] transition-colors duration-1000 ease-in-out" />
                   </div>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <CarouselPrevious className="hidden md:flex" />
-            <CarouselNext className="hidden md:flex" />
-          </Carousel>
+                  <h3
+                    className={cn(
+                      'text-2xl font-bold text-left w-full',
+                      { 'typewriter-text': isActive }
+                    )}
+                    style={{ '--text-len': feature.title.length } as React.CSSProperties}
+                  >
+                    {feature.title}
+                  </h3>
+                </div>
+                <p className="mt-4 text-muted-foreground text-left">
+                  {feature.description}
+                </p>
+              </div>
+            );
+          })}
+           <div className="absolute bottom-[-50px] left-1/2 -translate-x-1/2 w-1/2 max-w-sm h-1 bg-white/10 rounded-full overflow-hidden">
+                <div className="progress-line h-full bg-[--active-color] transition-colors duration-1000 ease-in-out"></div>
+            </div>
         </div>
       </div>
     </section>
