@@ -1,13 +1,13 @@
 
 'use client';
 
-import type { ResumeAnalysisOutput } from '@/ai/flows/resume-analyzer';
+import type { ResumeAnalysisOutput } from '@/ai/schemas';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BookText, Bot, BrainCircuit, GanttChartSquare, Gem, Star } from 'lucide-react';
+import { BookText, Bot, BrainCircuit, Gem, Star } from 'lucide-react';
 import React from 'react';
 
 interface AnalysisDisplayProps {

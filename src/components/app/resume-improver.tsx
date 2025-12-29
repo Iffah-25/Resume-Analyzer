@@ -2,7 +2,6 @@
 'use client';
 
 import { getResumeAnalysis } from '@/app/actions';
-import type { ResumeAnalysisOutput } from '@/ai/flows/resume-analyzer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -11,6 +10,7 @@ import { Loader2, ShieldCheck } from 'lucide-react';
 import React, { useState, useTransition } from 'react';
 import { AnalysisDisplay } from './analysis-display';
 import { FileDropzone } from './file-dropzone';
+import type { ResumeAnalysisOutput } from '@/ai/schemas';
 
 export function ResumeImprover() {
   const [resumeText, setResumeText] = useState('');

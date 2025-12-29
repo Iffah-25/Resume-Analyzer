@@ -1,6 +1,7 @@
 
 'use server';
-import { analyzeResume, ResumeAnalysisOutput } from '@/ai/flows/resume-analyzer';
+import { analyzeResume } from '@/ai/flows/resume-analyzer';
+import { ResumeAnalysisOutput } from '@/ai/schemas';
 
 export async function getResumeAnalysis(resumeText: string): Promise<ResumeAnalysisOutput> {
   if (!resumeText.trim()) {

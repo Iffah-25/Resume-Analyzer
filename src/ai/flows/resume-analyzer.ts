@@ -13,31 +13,8 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { z } from 'zod';
-
-export const ResumeAnalysisInputSchema = z.object({
-  resumeText: z.string().describe('The text of the resume to analyze.'),
-});
-export type ResumeAnalysisInput = z.infer<typeof ResumeAnalysisInputSchema>;
-
-export const ResumeAnalysisOutputSchema = z.object({
-  resumeStrengthScore: z.string().describe('A score out of 10, e.g., "7/10".'),
-  improvedProfessionalSummary: z.string().describe('An improved professional summary, 3-4 lines long.'),
-  skillsToAddOrImprove: z.array(z.string()).describe('A list of skills to add or improve.'),
-  atsKeywordsMissing: z.array(z.string()).describe('A list of missing ATS keywords.'),
-  sectionWiseSuggestions: z.object({
-    summary: z.string().describe('Suggestions for the summary section.'),
-    skills: z.string().describe('Suggestions for the skills section.'),
-    experience: z.string().describe('Suggestions for the experience section.'),
-    projects: z.string().describe('Suggestions for the projects section.'),
-    education: z.string().describe('Suggestions for the education section.'),
-  }).describe('Section-wise suggestions for the resume.'),
-});
-export type ResumeAnalysisOutput = z.infer<typeof ResumeAnalysisOutputSchema>;
-
-export async function analyzeResume(input: ResumeAnalysisInput): Promise<ResumeAnalysisOutput> {
-  return resumeAnalysisFlow(input);
-}
+import { generateImprovedSummaryTool } from './improved-summary-generator';
+import { ResumeAnalysisInputSchema, ResumeAnalysisOutputSchema, type ResumeAnalysisInput, type ResumeAnalysisOutput } from '@/ai/schemas';
 
 const resumeAnalysisPrompt = ai.definePrompt({
   name: 'resumeAnalysisPrompt',
@@ -61,6 +38,7 @@ Rules:
 Resume Text:
 {{{resumeText}}}
 `,
+  tools: [generateImprovedSummaryTool]
 });
 
 const resumeAnalysisFlow = ai.defineFlow(
@@ -74,3 +52,7 @@ const resumeAnalysisFlow = ai.defineFlow(
     return output!;
   }
 );
+
+export async function analyzeResume(input: ResumeAnalysisInput): Promise<ResumeAnalysisOutput> {
+  return resumeAnalysisFlow(input);
+}
