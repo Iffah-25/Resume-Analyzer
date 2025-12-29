@@ -5,22 +5,15 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { BookText, BrainCircuit, Gem, Star, ShieldCheck, FileDiff, CheckSquare, Square, Download, Loader2 } from 'lucide-react';
-import React, { useState, useEffect } from 'react';
+import { BookText, BrainCircuit, Gem, Star, ShieldCheck, FileDiff, CheckSquare, Square } from 'lucide-react';
+import React, { useState } from 'react';
 import { cn } from '@/lib/utils';
 import { Switch } from '../ui/switch';
 import { Label } from '../ui/label';
-import { Button } from '../ui/button';
-import { getImprovedResume } from '@/app/actions';
-import { useToast } from '@/hooks/use-toast';
-import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
-import { ResumeTemplate } from './resume-template';
 
 interface AnalysisDisplayProps {
   analysis: ResumeAnalysisOutput | null;
   isPending: boolean;
-  originalResumeText: string;
 }
 
 const SectionCard = ({ icon, title, children, className }: { icon: React.ReactNode, title: string, children: React.ReactNode, className?: string }) => (
@@ -123,68 +116,8 @@ const ChecklistItem = ({ children }: { children: React.ReactNode }) => {
     );
 }
 
-export function AnalysisDisplay({ analysis, isPending, originalResumeText }: AnalysisDisplayProps) {
+export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
     const [showImproved, setShowImproved] = useState(true);
-    const [isDownloading, setIsDownloading] = useState(false);
-    const [textForPdf, setTextForPdf] = useState<string | null>(null);
-    const resumeTemplateRef = React.useRef<HTMLDivElement>(null);
-    const { toast } = useToast();
-
-    useEffect(() => {
-        const generatePdf = async () => {
-            if (!textForPdf || !resumeTemplateRef.current) return;
-            
-            try {
-                const canvas = await html2canvas(resumeTemplateRef.current, { scale: 2 });
-                const imgData = canvas.toDataURL('image/png');
-        
-                if (imgData.length < 100) { // Simple check for empty image
-                    throw new Error("Generated image data is empty or invalid.");
-                }
-
-                const pdf = new jsPDF({
-                  orientation: 'portrait',
-                  unit: 'px',
-                  format: [canvas.width, canvas.height],
-                });
-        
-                pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-                pdf.save('Improved-Resume.pdf');
-        
-                toast({ title: 'Success', description: 'Your improved resume has been downloaded.' });
-            } catch (error) {
-                console.error("PDF generation failed:", error);
-                toast({ variant: 'destructive', title: 'Error', description: 'Could not generate the PDF. The resume template may be empty or invalid.' });
-            } finally {
-                setTextForPdf(null); // Clean up state
-                setIsDownloading(false);
-            }
-        };
-
-        generatePdf();
-    }, [textForPdf, toast]);
-
-    const handleDownload = async () => {
-        if (!analysis || !originalResumeText) return;
-        setIsDownloading(true);
-    
-        try {
-            const result = await getImprovedResume({
-              resumeText: originalResumeText,
-              improvedSummary: analysis.improvedSummary,
-            });
-            setTextForPdf(result.improvedResumeText); // Trigger the useEffect
-        } catch (error) {
-          console.error('Download failed:', error);
-          toast({
-            variant: 'destructive',
-            title: 'Download Failed',
-            description: 'Could not generate the improved resume text.',
-          });
-          setIsDownloading(false);
-        }
-      };
-
 
     if (isPending) {
       return <AnalysisSkeleton />;
@@ -200,15 +133,6 @@ export function AnalysisDisplay({ analysis, isPending, originalResumeText }: Ana
   
     return (
       <div className="mt-8 grid gap-6 animate-fade-in">
-        {/* Off-screen container for PDF generation */}
-        <div className="absolute -left-[9999px] top-auto">
-            {textForPdf && (
-                <div ref={resumeTemplateRef}>
-                    <ResumeTemplate resumeText={textForPdf} />
-                </div>
-            )}
-        </div>
-
           <div className="grid md:grid-cols-2 gap-6 items-center">
               <SectionCard icon={<Star {...iconProps} />} title="Resume Strength Score">
                   <div className="flex items-center justify-center gap-4">
@@ -279,16 +203,6 @@ export function AnalysisDisplay({ analysis, isPending, originalResumeText }: Ana
                   ))}
               </Accordion>
           </SectionCard>
-
-          <div className="flex justify-center mt-4">
-                <Button onClick={handleDownload} disabled={isDownloading} size="lg" className="font-bold">
-                    {isDownloading ? (
-                        <><Loader2 className="mr-2 h-5 w-5 animate-spin" /> Generating PDF...</>
-                    ) : (
-                        <><Download className="mr-2 h-5 w-5" /> Download Improved Resume</>
-                    )}
-                </Button>
-            </div>
       </div>
     );
   }

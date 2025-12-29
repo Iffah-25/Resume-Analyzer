@@ -209,7 +209,7 @@ export function ResumeAnalyzer() {
             </CardContent>
           </Card>
 
-          <AnalysisDisplay analysis={analysis} isPending={isPending} originalResumeText={resumeText} />
+          <AnalysisDisplay analysis={analysis} isPending={isPending} />
         </div>
       </div>
     </section>

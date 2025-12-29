@@ -1,92 +1,70 @@
-/**
- * @fileoverview A clean, printable template for the improved resume.
- * This component is used by html2canvas to generate a PDF.
- */
-import React from 'react';
-
-interface ResumeTemplateProps {
-  resumeText: string;
+{
+  "name": "nextn",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack -p 9002",
+    "genkit:dev": "genkit start -- tsx src/ai/dev.ts",
+    "genkit:watch": "genkit start -- tsx --watch src/ai/dev.ts",
+    "build": "NODE_ENV=production next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@genkit-ai/google-genai": "^1.20.0",
+    "@genkit-ai/next": "^1.20.0",
+    "@hookform/resolvers": "^4.1.3",
+    "@radix-ui/react-accordion": "^1.2.3",
+    "@radix-ui/react-alert-dialog": "^1.1.6",
+    "@radix-ui/react-avatar": "^1.1.3",
+    "@radix-ui/react-checkbox": "^1.1.4",
+    "@radix-ui/react-collapsible": "^1.1.11",
+    "@radix-ui/react-dialog": "^1.1.6",
+    "@radix-ui/react-dropdown-menu": "^2.1.6",
+    "@radix-ui/react-label": "^2.1.2",
+    "@radix-ui/react-menubar": "^1.1.6",
+    "@radix-ui/react-popover": "^1.1.6",
+    "@radix-ui/react-progress": "^1.1.2",
+    "@radix-ui/react-radio-group": "^1.2.3",
+    "@radix-ui/react-scroll-area": "^1.2.3",
+    "@radix-ui/react-select": "^2.1.6",
+    "@radix-ui/react-separator": "^1.1.2",
+    "@radix-ui/react-slider": "^1.2.3",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.1.3",
+    "@radix-ui/react-tabs": "^1.1.3",
+    "@radix-ui/react-toast": "^1.2.6",
+    "@radix-ui/react-tooltip": "^1.1.8",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "date-fns": "^3.6.0",
+    "dotenv": "^16.5.0",
+    "embla-carousel-autoplay": "^8.2.0",
+    "embla-carousel-react": "^8.6.0",
+    "firebase": "^11.9.1",
+    "genkit": "^1.20.0",
+    "lucide-react": "^0.475.0",
+    "mammoth": "^1.8.0",
+    "next": "15.5.9",
+    "patch-package": "^8.0.0",
+    "react": "^19.2.1",
+    "react-day-picker": "^9.11.3",
+    "react-dom": "^19.2.1",
+    "react-hook-form": "^7.54.2",
+    "react-intersection-observer": "^9.10.3",
+    "recharts": "^2.15.1",
+    "tailwind-merge": "^3.0.1",
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^19.2.1",
+    "@types/react-dom": "^19.2.1",
+    "genkit-cli": "^1.20.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5"
+  }
 }
-
-// A simple helper to identify headings
-const isHeading = (line: string, nextLine?: string) => {
-    const trimmedLine = line.trim();
-    if (trimmedLine.length === 0 || trimmedLine.length > 50) return false;
-    // Common resume section headers
-    const headings = ['professional summary', 'summary', 'skills', 'experience', 'projects', 'education', 'contact'];
-    const isAHeading = headings.some(h => trimmedLine.toLowerCase().startsWith(h));
-    
-    // It's likely a heading if it's short, doesn't end with a period, and the next line is not empty (unless it's the last line)
-    return isAHeading && !trimmedLine.endsWith('.') && (nextLine !== '' || nextLine === undefined);
-};
-
-// A helper to parse contact info
-const parseContactInfo = (lines: string[]) => {
-    const contactInfo: string[] = [];
-    const otherLines: string[] = [];
-    let name = '';
-
-    if (lines.length > 0) {
-        name = lines[0]; // Assume first line is the name
-    }
-
-    lines.slice(1).forEach(line => {
-        if (line.includes('@') || line.match(/\(?\d{3}\)?[-.\s]?\d{3}[-.\s]?\d{4}/) || line.includes('linkedin.com') || line.includes('github.com')) {
-            contactInfo.push(line.trim());
-        } else {
-            otherLines.push(line);
-        }
-    });
-
-    return { name, contactInfo, remainingLines: otherLines };
-}
-
-export const ResumeTemplate: React.FC<ResumeTemplateProps> = ({ resumeText }) => {
-    const allLines = resumeText.split('\n');
-    const { name, contactInfo, remainingLines } = parseContactInfo(allLines);
-    
-    const bodyContent = remainingLines.join('\n');
-    const sections = bodyContent.split(/(\n\s*\n)/).filter(s => s.trim() !== '');
-
-  return (
-    <div className="p-10 bg-white text-gray-800 font-serif" style={{ width: '210mm', minHeight: '297mm', fontFamily: 'Georgia, serif' }}>
-        {/* Header */}
-        <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold tracking-wider">{name}</h1>
-            <p className="text-sm mt-2 text-gray-600">
-                {contactInfo.join(' | ')}
-            </p>
-        </div>
-
-      {sections.map((section, index) => {
-        const lines = section.trim().split('\n');
-        const firstLine = lines[0].trim();
-        
-        if (isHeading(firstLine, lines[1])) {
-          return (
-            <div key={index} className="mb-6">
-              <h2 className="text-xl font-bold border-b-2 border-gray-300 mt-4 mb-3 pb-1 tracking-wide uppercase">
-                {firstLine}
-              </h2>
-              <div className="text-sm text-gray-700 leading-relaxed">
-                {lines.slice(1).map((line, lineIndex) => (
-                    <p key={lineIndex}>{line.startsWith('- ') ? `• ${line.substring(2)}` : line}</p>
-                ))}
-              </div>
-            </div>
-          );
-        }
-        
-        return (
-          <div key={index} className="mb-4 text-sm text-gray-700 leading-relaxed">
-            {lines.map((line, lineIndex) => (
-              <p key={lineIndex} className={line.startsWith('- ') ? "ml-4" : ""}>
-                {line.startsWith('- ') ? `• ${line.substring(2)}` : line}
-              </p>
-            ))}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
