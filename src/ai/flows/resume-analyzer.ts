@@ -25,10 +25,11 @@ const resumeAnalysisPrompt = ai.definePrompt({
 Analyze the resume text provided below. Return the output strictly as a JSON object matching the provided schema.
 
 1.  **Resume Strength Score**: Provide a score out of 10.
-2.  **Improved Professional Summary**: Write an improved summary of 3–4 lines.
-3.  **Skills to Add or Improve**: List skills as bullet points.
-4.  **ATS Keywords Missing**: List important missing keywords, comma-separated.
-5.  **Section-wise Suggestions**: Provide concise and practical suggestions for each section (Summary, Skills, Experience, Projects, Education). For each suggestion, provide a brief "before" and "after" example to illustrate the improvement.
+2.  **ATS Compatibility**: Based on ATS compatibility, classify the resume as: Poor, Average, or Strong.
+3.  **Improved Professional Summary**: Write an improved summary of 3–4 lines.
+4.  **Skills to Add or Improve**: List skills as bullet points.
+5.  **ATS Keywords Missing**: List important missing keywords, comma-separated.
+6.  **Section-wise Suggestions**: Provide concise and practical suggestions for each section (Summary, Skills, Experience, Projects, Education). For each suggestion, provide a brief "before" and "after" example to illustrate the improvement.
 
 Rules:
 - Keep all suggestions concise and practical.
