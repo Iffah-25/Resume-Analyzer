@@ -128,7 +128,7 @@ export function FeatureSection() {
   const dynamicStyle = {
     '--active-color': activeFeature.color,
     '--transition-duration': `${TRANSITION_DURATION}ms`,
-    '--animation-play-state': 'running',
+    '--animation-play-state': inView ? 'running' : 'paused',
   } as React.CSSProperties;
 
   return (
