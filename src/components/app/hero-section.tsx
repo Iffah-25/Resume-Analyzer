@@ -135,7 +135,7 @@ export function HeroSection() {
       <div className="container px-4 md:px-6 relative z-20">
         <div className="flex flex-col items-center space-y-6 text-center">
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none animate-fade-in-up">
+            <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl/none animate-fade-in-up">
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
                 Build an ATS-Ready Resume
               </span>
