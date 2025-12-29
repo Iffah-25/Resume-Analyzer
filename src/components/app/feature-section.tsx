@@ -18,6 +18,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
+import React from 'react';
 
 const features = [
   {
@@ -64,6 +66,10 @@ export function FeatureSection() {
     threshold: 0.1,
   });
 
+  const plugin = React.useRef(
+    Autoplay({ delay: 2000, stopOnInteraction: true })
+  );
+
   return (
     <section id="features" className="w-full py-12 md:py-24 lg:py-32">
       <div
@@ -89,11 +95,14 @@ export function FeatureSection() {
         </div>
         <div className="mt-12">
           <Carousel
+            plugins={[plugin.current]}
             opts={{
               align: 'start',
               loop: true,
             }}
-            className="w-full max-w-sm mx-auto sm:max-w-xl md:max-w-3xl lg:max-w-5xl"
+            onMouseEnter={plugin.current.stop}
+            onMouseLeave={plugin.current.reset}
+            className="w-full max-w-md mx-auto sm:max-w-2xl md:max-w-4xl lg:max-w-6xl"
           >
             <CarouselContent>
               {features.map((feature, index) => (
