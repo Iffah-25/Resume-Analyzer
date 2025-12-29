@@ -107,6 +107,18 @@
       animation: progress var(--transition-duration) linear infinite;
       animation-play-state: var(--animation-play-state);
   }
+
+  .timeline-line {
+    transition: height 1.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .hover-3d {
+    transform-style: preserve-3d;
+    perspective: 1000px;
+  }
+  .hover-3d:hover {
+    transform: translateZ(20px) rotateX(var(--rotate-x, 0)) rotateY(var(--rotate-y, 0));
+  }
 }
 
 @keyframes typewriter {
