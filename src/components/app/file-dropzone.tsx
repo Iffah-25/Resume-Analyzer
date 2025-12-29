@@ -17,7 +17,7 @@ export function FileDropzone({ onTextExtracted }: FileDropzoneProps) {
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const handleFile = useCallback(async (file: File) => {
-    if (file && (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx'))) {
+    if (file && (file.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || file.name.endsWith('.docx') || file.type === 'application/msword')) {
       const reader = new FileReader();
       reader.onload = async (e) => {
         const arrayBuffer = e.target?.result;
@@ -51,7 +51,7 @@ export function FileDropzone({ onTextExtracted }: FileDropzoneProps) {
         toast({
             variant: 'destructive',
             title: "Invalid File Type",
-            description: "Please upload a .docx file.",
+            description: "Please upload a .doc or .docx file.",
         });
     }
   }, [onTextExtracted, toast]);
@@ -101,7 +101,7 @@ export function FileDropzone({ onTextExtracted }: FileDropzoneProps) {
         ref={fileInputRef}
         type="file"
         className="hidden"
-        accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        accept=".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         onChange={handleChange}
       />
       <UploadCloud className={cn("h-10 w-10 mb-3", isDragging ? 'text-primary' : 'text-muted-foreground')} />

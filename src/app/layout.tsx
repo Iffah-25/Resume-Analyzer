@@ -1,10 +1,11 @@
-import type {Metadata} from 'next';
-import { Toaster } from "@/components/ui/toaster"
+import type { Metadata } from 'next';
+import { Toaster } from '@/components/ui/toaster';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Gemini Resume Improver – AI-powered ATS Resume Feedback',
-  description: 'Get instant, AI-powered feedback on your resume. Paste your resume or upload a DOCX file for analysis.',
+  title: 'GeminiResumeAI - ATS-Ready Resume Builder with Gemini AI',
+  description:
+    'Instant resume feedback, keyword insights, and role-based suggestions — no sign-up required.',
 };
 
 export default function RootLayout({
@@ -13,12 +14,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark scroll-smooth">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet" />
+        <link
+          rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossOrigin="anonymous"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;600&display=swap"
+          rel="stylesheet"
+        />
       </head>
       <body className="font-body antialiased">
         {children}

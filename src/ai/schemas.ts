@@ -5,7 +5,7 @@
  * without violating the Next.js "use server" directive, which only allows async functions to be exported.
  */
 
-import {z} from 'zod';
+import { z } from 'zod';
 
 // #region Schemas and Types for Improved Summary Generator
 export const ImprovedSummaryInputSchema = z.object({
@@ -24,22 +24,55 @@ export type ImprovedSummaryOutput = z.infer<typeof ImprovedSummaryOutputSchema>;
 // #region Schemas and Types for Resume Analyzer
 export const ResumeAnalysisInputSchema = z.object({
   resumeText: z.string().describe('The text of the resume to analyze.'),
+  jobRole: z.string().optional().describe('The target job role for the resume.'),
 });
 export type ResumeAnalysisInput = z.infer<typeof ResumeAnalysisInputSchema>;
 
 export const ResumeAnalysisOutputSchema = z.object({
   resumeStrengthScore: z.string().describe('A score out of 10, e.g., "7/10".'),
-  atsCompatibility: z.enum(['Poor', 'Average', 'Strong']).describe('ATS compatibility classification: Poor, Average, or Strong.'),
-  improvedProfessionalSummary: z.string().describe('An improved professional summary, 3-4 lines long.'),
-  skillsToAddOrImprove: z.array(z.string()).describe('A list of skills to add or improve.'),
-  atsKeywordsMissing: z.array(z.string()).describe('A list of missing ATS keywords.'),
-  sectionWiseSuggestions: z.object({
-    summary: z.string().describe('Suggestions for the summary section with before/after examples.'),
-    skills: z.string().describe('Suggestions for the skills section with before/after examples.'),
-    experience: z.string().describe('Suggestions for the experience section with before/after examples.'),
-    projects: z.string().describe('Suggestions for the projects section with before/after examples.'),
-    education: z.string().describe('Suggestions for the education section with before/after examples.'),
-  }).describe('Section-wise suggestions for the resume.'),
+  atsCompatibility: z
+    .enum(['Poor', 'Average', 'Strong'])
+    .describe(
+      'ATS compatibility classification: Poor, Average, or Strong.'
+    ),
+  improvedProfessionalSummary: z
+    .string()
+    .describe('An improved professional summary, 3-4 lines long.'),
+  skillsToAddOrImprove: z
+    .array(z.string())
+    .describe('A list of skills to add or improve.'),
+  atsKeywordsMissing: z
+    .array(z.string())
+    .describe('A list of missing ATS keywords.'),
+  sectionWiseSuggestions: z
+    .object({
+      summary: z
+        .string()
+        .describe(
+          'Suggestions for the summary section with before/after examples.'
+        ),
+      skills: z
+        .string()
+        .describe(
+          'Suggestions for the skills section with before/after examples.'
+        ),
+      experience: z
+        .string()
+        .describe(
+          'Suggestions for the experience section with before/after examples.'
+        ),
+      projects: z
+        .string()
+        .describe(
+          'Suggestions for the projects section with before/after examples.'
+        ),
+      education: z
+        .string()
+        .describe(
+          'Suggestions for the education section with before/after examples.'
+        ),
+    })
+    .describe('Section-wise suggestions for the resume.'),
 });
 export type ResumeAnalysisOutput = z.infer<typeof ResumeAnalysisOutputSchema>;
 // #endregion

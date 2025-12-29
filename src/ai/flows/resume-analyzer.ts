@@ -1,4 +1,3 @@
-
 'use server';
 
 /**
@@ -13,14 +12,23 @@
  */
 
 import { ai } from '@/ai/genkit';
-import { generateImprovedSummaryTool } from './improved-summary-generator';
-import { ResumeAnalysisInputSchema, ResumeAnalysisOutputSchema, type ResumeAnalysisInput, type ResumeAnalysisOutput } from '@/ai/schemas';
+import {
+  ResumeAnalysisInputSchema,
+  ResumeAnalysisOutputSchema,
+  type ResumeAnalysisInput,
+  type ResumeAnalysisOutput,
+} from '@/ai/schemas';
 
 const resumeAnalysisPrompt = ai.definePrompt({
   name: 'resumeAnalysisPrompt',
   input: { schema: ResumeAnalysisInputSchema },
   output: { schema: ResumeAnalysisOutputSchema },
   prompt: `You are a professional ATS resume reviewer and career coach.
+{{#if jobRole}}
+You are reviewing a resume for the role of: **{{jobRole}}**. Tailor your feedback and keyword suggestions accordingly.
+{{else}}
+You are reviewing a general resume. Assume the candidate is a student or fresher.
+{{/if}}
 
 Analyze the resume text provided below. Return the output strictly as a JSON object matching the provided schema.
 
@@ -34,12 +42,10 @@ Analyze the resume text provided below. Return the output strictly as a JSON obj
 Rules:
 - Keep all suggestions concise and practical.
 - Do not rewrite the entire resume.
-- Assume the candidate is a student or fresher.
 
 Resume Text:
 {{{resumeText}}}
 `,
-  tools: [generateImprovedSummaryTool]
 });
 
 const resumeAnalysisFlow = ai.defineFlow(
@@ -54,6 +60,8 @@ const resumeAnalysisFlow = ai.defineFlow(
   }
 );
 
-export async function analyzeResume(input: ResumeAnalysisInput): Promise<ResumeAnalysisOutput> {
+export async function analyzeResume(
+  input: ResumeAnalysisInput
+): Promise<ResumeAnalysisOutput> {
   return resumeAnalysisFlow(input);
 }
