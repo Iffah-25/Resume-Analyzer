@@ -20,6 +20,7 @@ import {
 import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
 import { sampleResume } from '@/lib/sample-resume';
+import { Input } from '../ui/input';
 
 const jobRoles = [
   'Software Engineer',
@@ -31,12 +32,14 @@ const jobRoles = [
   'UX/UI Designer',
   'DevOps Engineer',
   'Cybersecurity Analyst',
-  'Marketing Manager'
+  'Marketing Manager',
+  'Other',
 ];
 
 export function ResumeAnalyzer() {
   const [resumeText, setResumeText] = useState('');
   const [jobRole, setJobRole] = useState<string>('');
+  const [customJobRole, setCustomJobRole] = useState<string>('');
   const [analysis, setAnalysis] = useState<ResumeAnalysisOutput | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -55,10 +58,13 @@ export function ResumeAnalyzer() {
       });
       return;
     }
+
+    const finalJobRole = role === 'Other' ? customJobRole : role;
+
     startTransition(async () => {
       try {
         setAnalysis(null); // Clear previous analysis
-        const result = await getResumeAnalysis({ resumeText: text, jobRole: role });
+        const result = await getResumeAnalysis({ resumeText: text, jobRole: finalJobRole });
         setAnalysis(result);
       } catch (error) {
         console.error('Analysis failed:', error);
@@ -96,6 +102,7 @@ export function ResumeAnalyzer() {
   const handleClear = () => {
     setResumeText('');
     setJobRole('');
+    setCustomJobRole('');
     setAnalysis(null);
     toast({
         title: "Cleared",
@@ -149,21 +156,34 @@ export function ResumeAnalyzer() {
                 >
                   (Optional) Select your target job role for tailored feedback
                 </label>
-                <Select value={jobRole} onValueChange={setJobRole}>
-                  <SelectTrigger
-                    id="job-role"
-                    className="w-full max-w-sm mx-auto"
-                  >
-                    <SelectValue placeholder="Select a job role..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {jobRoles.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="max-w-sm mx-auto">
+                  <Select value={jobRole} onValueChange={setJobRole}>
+                    <SelectTrigger
+                      id="job-role"
+                      className="w-full"
+                    >
+                      <SelectValue placeholder="Select a job role..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {jobRoles.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+
+                  {jobRole === 'Other' && (
+                    <Input
+                      type="text"
+                      placeholder="Enter job role"
+                      value={customJobRole}
+                      onChange={(e) => setCustomJobRole(e.target.value)}
+                      className="mt-2"
+                      aria-label="Custom job role"
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="mt-8 flex flex-col md:flex-row items-center justify-center gap-4 flex-wrap">
@@ -197,7 +217,7 @@ export function ResumeAnalyzer() {
                 </Button>
                  <Button
                   onClick={handleClear}
-                  disabled={isPending || (!resumeText && !analysis)}
+                  disabled={isPending || (!resumeText && !analysis && !jobRole && !customJobRole)}
                   size="lg"
                   variant="ghost"
                   className="w-full md:w-auto font-bold text-lg text-muted-foreground hover:text-destructive"

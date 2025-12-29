@@ -20,6 +20,7 @@ import {
 import { useInView } from 'react-intersection-observer';
 import { cn } from '@/lib/utils';
 import { Footer } from '@/components/app/footer';
+import { Input } from '@/components/ui/input';
 
 const jobRoles = [
   'Software Engineer',
@@ -32,11 +33,13 @@ const jobRoles = [
   'DevOps Engineer',
   'Cybersecurity Analyst',
   'Marketing Manager',
+  'Other',
 ];
 
 function ResumeAnalyzerTool() {
   const [resumeText, setResumeText] = useState('');
   const [jobRole, setJobRole] = useState<string>('');
+  const [customJobRole, setCustomJobRole] = useState<string>('');
   const [analysis, setAnalysis] = useState<ResumeAnalysisOutput | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
@@ -56,9 +59,11 @@ function ResumeAnalyzerTool() {
       return;
     }
 
+    const finalJobRole = jobRole === 'Other' ? customJobRole : jobRole;
+
     startTransition(async () => {
       try {
-        const result = await getResumeAnalysis({ resumeText, jobRole });
+        const result = await getResumeAnalysis({ resumeText, jobRole: finalJobRole });
         setAnalysis(result);
       } catch (error) {
         console.error('Analysis failed:', error);
@@ -130,21 +135,33 @@ function ResumeAnalyzerTool() {
                 >
                   (Optional) Select your target job role for tailored feedback
                 </label>
-                <Select value={jobRole} onValueChange={setJobRole}>
-                  <SelectTrigger
-                    id="job-role"
-                    className="w-full max-w-sm mx-auto"
-                  >
-                    <SelectValue placeholder="Select a job role..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {jobRoles.map((role) => (
-                      <SelectItem key={role} value={role}>
-                        {role}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="max-w-sm mx-auto">
+                  <Select value={jobRole} onValueChange={setJobRole}>
+                    <SelectTrigger
+                      id="job-role"
+                      className="w-full"
+                    >
+                      <SelectValue placeholder="Select a job role..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {jobRoles.map((role) => (
+                        <SelectItem key={role} value={role}>
+                          {role}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {jobRole === 'Other' && (
+                    <Input
+                      type="text"
+                      placeholder="Enter job role"
+                      value={customJobRole}
+                      onChange={(e) => setCustomJobRole(e.target.value)}
+                      className="mt-2"
+                      aria-label="Custom job role"
+                    />
+                  )}
+                </div>
               </div>
 
               <div className="mt-8 flex flex-col items-center">
