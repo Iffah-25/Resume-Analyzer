@@ -37,7 +37,7 @@ Analyze the resume text provided below. Return the output strictly as a JSON obj
 1.  **Resume Strength Score**: Provide a score out of 10.
 2.  **ATS Compatibility**: Based on ATS compatibility, classify the resume as: Poor, Average, or Strong.
 3.  **Original Professional Summary**: Extract the original professional summary section from the resume text. If no clear summary section is found, state "No summary found."
-4.  **Improved Professional Summary**: Based on the original summary, determine if it is weak or could be improved. If it is, use the 'generateImprovedSummary' tool to create a new one. Otherwise, return the original summary.
+4.  **Improved Summary**: Based on the original summary, determine if it is weak or could be improved. If it is, use the 'generateImprovedSummary' tool to create a new one. Otherwise, return the original summary.
 5.  **Skills to Add or Improve**: List skills as an array of strings.
 6.  **ATS Keywords Missing**: List important missing keywords as an array of strings.
 7.  **Section-wise Suggestions**: For each key resume section (Summary, Skills, Experience, Projects, Education), provide an array of concise, actionable suggestion strings. Each string should be a recommendation for improvement.

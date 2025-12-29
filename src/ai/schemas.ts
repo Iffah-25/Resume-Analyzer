@@ -36,7 +36,7 @@ export const ResumeAnalysisOutputSchema = z.object({
       'ATS compatibility classification: Poor, Average, or Strong.'
     ),
   originalSummary: z.string().describe('The original professional summary from the resume.'),
-  improvedProfessionalSummary: z
+  improvedSummary: z
     .string()
     .describe('An improved professional summary, 3-4 lines long.'),
   skillsToAddOrImprove: z

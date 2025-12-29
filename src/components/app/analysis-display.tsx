@@ -159,12 +159,12 @@ export function AnalysisDisplay({ analysis, isPending }: AnalysisDisplayProps) {
                 <Switch id="summary-toggle" checked={showImproved} onCheckedChange={setShowImproved} />
                 <Label htmlFor='summary-toggle' className={cn('font-normal transition-colors', showImproved ? 'text-primary font-semibold' : 'text-muted-foreground')}>After (AI)</Label>
             </div>
-            <div className="relative overflow-hidden">
-              <div className={cn("text-muted-foreground leading-relaxed transition-all duration-500", !showImproved ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 absolute')}>
+            <div className="relative min-h-[6rem]">
+              <div className={cn("text-muted-foreground leading-relaxed transition-all duration-500", !showImproved ? 'opacity-100 translate-x-0 static' : 'opacity-0 -translate-x-4 absolute')}>
                   {analysis.originalSummary}
               </div>
-              <div className={cn("text-foreground leading-relaxed transition-all duration-500", showImproved ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4 absolute')}>
-                  {analysis.improvedProfessionalSummary}
+              <div className={cn("text-foreground leading-relaxed transition-all duration-500", showImproved ? 'opacity-100 translate-x-0 static' : 'opacity-0 translate-x-4 absolute')}>
+                  {analysis.improvedSummary}
               </div>
             </div>
           </SectionCard>
